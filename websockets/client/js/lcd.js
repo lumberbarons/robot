@@ -8,7 +8,13 @@ $(document).ready(function() {
 });
 
 function registerButtonListeners() {
-     $("#write").on("click", writeBothRowsToLcd);
+    $("#write").on("click", writeBothRowsToLcd);
+    
+    $("#clear").on("click", function() {
+        $("#textForLcdRowOne").val("");
+        $("#textForLcdRowTwo").val("");
+        clearLcd();
+    });
     
     $("#backlightOn").on("click", function() {
         backlight(true);
