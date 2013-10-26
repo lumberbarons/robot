@@ -5,13 +5,14 @@ import time
 import imaplib
 import sys
 
-password = str(sys.argv[1])
+address = str(sys.argv[1])
+password = str(sys.argv[2])
 bus = smbus.SMBus(1)
 addr = 0x21
 
 def unread():
     mail = imaplib.IMAP4_SSL('imap.gmail.com')
-    mail.login('jellwood@gmail.com', password)
+    mail.login(address, password)
     mail.select("inbox")
     result, data = mail.uid('search', None, 'UNSEEN')
     mail.close()
