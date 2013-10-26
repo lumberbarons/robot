@@ -1,0 +1,20 @@
+_send_character: CODE, 2802 0 24
+_init: CODE, 2912 0 8
+_splash: CODE, 2618 0 50
+_backlight_on: CODE, 2936 0 4
+_main: CODE, 2522 0 390
+_backlight_off: CODE, 2932 0 4
+_test: CODE, 2698 0 30
+_nibble: CODE, 2412 0 110
+_delay_10ms: CODE, 2668 0 30
+_delay_10us: CODE, 2850 0 22
+_isr: CODE, 8 0 2276
+_send_command: CODE, 2894 0 18
+_init_lcd: CODE, 2284 0 128
+_pulse: CODE, 2826 0 24
+_cursor: CODE, 2778 0 24
+_clear: CODE, 2920 0 6
+_delay_s: CODE, 2872 0 22
+_init_i2c: CODE, 2728 0 26
+_home: CODE, 2926 0 6
+Total: 3202

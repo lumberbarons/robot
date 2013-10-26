@@ -1,0 +1,15 @@
+_init: CODE, 2624 0 8
+_motor_one_forward: CODE, 2440 0 48
+_motor_one_stop: CODE, 2558 0 18
+_init_motor: CODE, 2344 0 48
+_main: CODE, 2222 0 402
+_motor_one_backward: CODE, 2392 0 48
+_get: CODE, 2538 0 20
+_motor_one_speed: CODE, 2604 0 10
+_motor_two_forward: CODE, 2576 0 14
+_motor_two_stop: CODE, 2632 0 6
+_isr: CODE, 8 0 2214
+_motor_two_backward: CODE, 2590 0 14
+_motor_two_speed: CODE, 2614 0 10
+_init_i2c: CODE, 2488 0 26
+Total: 2886
