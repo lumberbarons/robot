@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Robot LCD Controller</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="navbar.css">
+    </head>
+    <body>
+        <div class="container">
+            <div class="navbar navbar-default">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Robot</a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="index.html">Main</a></li>
+                        <li class="active"><a href="lcd.html">LCD</a></li>
+                        <li><a href="stepper.html">Stepper</a></li>
+                        <li><a href="motor.html">Motor</a></li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+                <h2>LCD Controller</h1>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <form role="form">
+                            <div class="form-group">
+                                <label for="textForLcdRowOne">LCD Row #1:</label>
+                                <input type="text" class="form-control" id="textForLcdRowOne"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="textForLcdRowTwo">LCD Row #2:</label>
+                                <input type="text" class="form-control" id="textForLcdRowTwo"/>
+                            </div>
+                            <button type="button" class="btn btn-default btn-lg" id="write">Write</button>
+                        </form>
+                        <!--div>
+                            <h2>Text is:</h2>
+                        </div>
+                        <h3><div id="textInLcdRowOne"></div></h3>
+                        <h3><div id="textInLcdRowTwo"></div></h3>-->
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div>
+                            <button type="button" class="btn btn-lg" id="backlightOn">Backlight On</button>
+                            <button type="button" class="btn btn-lg" id="backlightOff">Backlight Off</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script src="http://autobahn.s3.amazonaws.com/js/autobahn.min.js"></script>
+        <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+        <script src="js/websockets.js"></script>
+        <script src="js/lcd.js"></script>
+    </body>
+ </html>
+        
