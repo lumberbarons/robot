@@ -2,3 +2,5 @@ build
 dist
 private
 *.pyc
+funclist
+l.obj

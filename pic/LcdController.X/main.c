@@ -1,29 +1,49 @@
-#include <htc.h>
+#include <xc.h>
 
 #include "config.h"
-#include "serial.h"
 #include "delay.h"
 #include "lcd.h"
+
+#include <plib/usart.h>
+
+#
+
+unsigned char NEWLINE[] = "\r\n";
 
 const unsigned char address = 0x21;
 
 void init_i2c() {
-    TRISB0 = 1;
-    TRISB1 = 1;
+    TRISBbits.RB0 = 1;
+    TRISBbits.RB1 = 1;
 
     SMP = 0;
     SSPCON1 = 0b00101110; // I2C Enabled, I2C Slave 7-bit Address
     SSPCON2 = 0b00000001; // Clock Stretching Enabled
     SSPADD = address << 1;
 
-    SSPIE = 1;
+    PIE1bits.SSPIE = 1;
     PEIE = 1;
     GIE = 1;
+}
+
+unsigned char UART1Config = 0;
+unsigned char baud = 312; // 9600 Baud at 48MHz
+
+void init_serial() {
+    TRISCbits.RC6 = 0;
+    TRISCbits.RC7 = 1;
+
+    UART1Config = USART_TX_INT_OFF & USART_TX_INT_OFF & USART_ASYNCH_MODE & USART_EIGHT_BIT & USART_BRGH_HIGH;
+    OpenUSART(UART1Config, baud);
+
+    putsUSART(SPLASH_MSG);
 }
 
 void init() {
     init_lcd();
     init_i2c();
+
+    init_serial();
 }
 
 #define MSTR_WRITE_ADD  0b00001001 // Master Write, Last Byte was Address
@@ -101,7 +121,7 @@ unsigned char command;
 void main() {
     init();
 
-    while (1) { 
+    while (1) {
         if (ready) {
             command = i2c_rx_buff[0];
             switch(command) {

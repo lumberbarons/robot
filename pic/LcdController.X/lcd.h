@@ -1,3 +1,5 @@
+unsigned char SPLASH_MSG[] = "LCDv0.0.2 (2x16)";
+
 // commands
 #define LCD_CLEARDISPLAY 0x01
 #define LCD_RETURNHOME 0x02

@@ -1,4 +1,4 @@
-#include <htc.h>
+#include <xc.h>
 #include "delay.h"
 
 void delay_10ms(unsigned char count) {

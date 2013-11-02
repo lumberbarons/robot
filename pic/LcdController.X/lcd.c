@@ -1,4 +1,4 @@
-#include <htc.h>
+#include <xc.h>
 
 #include "lcd.h"
 #include "delay.h"
@@ -14,8 +14,6 @@
 
 #define BACKLIGHT LATC0
 
-const char* SPLASH_MSG = "LCDv0.0.1 (2x16)";
-
 void pulse();
 void send_command(unsigned char data);
 void send_character(unsigned char data);
@@ -24,14 +22,14 @@ void nibble(unsigned char data);
 void splash(const char* message);
 
 void init_lcd() {
-    TRISB7 = 0;
-    TRISB6 = 0;
-    TRISB5 = 0;
+    TRISBbits.RB7 = 0;
+    TRISBbits.RB6 = 0;
+    TRISBbits.RB5 = 0;
 
-    TRISA0 = 0;
-    TRISA1 = 0;
-    TRISA2 = 0;
-    TRISA3 = 0;
+    TRISAbits.RA0 = 0;
+    TRISAbits.RA1 = 0;
+    TRISAbits.RA2 = 0;
+    TRISAbits.RA3 = 0;
 
     RS = 0;
     RW = 0;
@@ -50,7 +48,7 @@ void init_lcd() {
     send_command(LCD_FUNCTIONSET | LCD_4BITMODE | LCD_2LINE | LCD_5x8DOTS);
     send_command(LCD_DISPLAYCONTROL | LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF);
 
-    TRISC0 = 0;
+    TRISCbits.RC0 = 0;
     backlight_on();
 
     clear();
