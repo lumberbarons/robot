@@ -1,16 +1,9 @@
-#include <htc.h>
+#include <xc.h>
+#include <plib/usart.h>
 
 #include "config.h"
-#include "serial.h"
 #include "delay.h"
 #include "motor.h"
-
-#define MTR_ONE_FWD 0xFF
-#define MTR_ONE_BWD 0xFE
-#define MTR_ONE_OFF 0xFD
-#define MTR_TWO_FWD 0xFC
-#define MTR_TWO_BWD 0xFB
-#define MTR_TWO_OFF 0xFA
 
 const unsigned char address = 0x20;
 
@@ -26,6 +19,17 @@ void init_i2c() {
     SSPIE = 1;
     PEIE = 1;
     GIE = 1;
+}
+
+unsigned char UART1Config = 0;
+unsigned char baud = 312; // 9600 Baud at 48MHz
+
+void init_serial() {
+    TRISCbits.RC6 = 0;
+    TRISCbits.RC7 = 1;
+
+    UART1Config = USART_TX_INT_OFF & USART_TX_INT_OFF & USART_ASYNCH_MODE & USART_EIGHT_BIT & USART_BRGH_HIGH;
+    OpenUSART(UART1Config, baud);
 }
 
 void init() {
@@ -99,6 +103,7 @@ unsigned char command;
 
 #define COMMAND_STEP_FWD    0x00
 #define COMMAND_STEP_BWD    0x01
+#define COMMAND_RELEASE     0x02
 
 void main() {
     init();
@@ -113,8 +118,10 @@ void main() {
                 case COMMAND_STEP_BWD:
                     backward();
                     break;
+                case COMMAND_RELEASE:
+                    release();
+                    break;
             }
-
             ready = 0;
         }
     }

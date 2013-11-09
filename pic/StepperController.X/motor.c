@@ -1,4 +1,4 @@
-#include <htc.h>
+#include <xc.h>
 #include "delay.h"
 #include "motor.h"
 
@@ -18,18 +18,12 @@
 void init_motor() {
     TRISA = 0x00;
 
-    HBRIDGE_12_E = 1;
-    HBRIDGE_34_E = 1;
+    release();
 
     TRISC = 0x00;
 
     MOTOR_1 = 1;
     MOTOR_2 = 1;
-
-    bitclr(LATA, BLACK);
-    bitclr(LATA, GREEN);
-    bitclr(LATA, RED);
-    bitclr(LATA, BLUE);
 }
 
 unsigned char forward_step = 0;
@@ -41,6 +35,18 @@ const unsigned char reverse_steps[4] = { BLUE, GREEN, RED, BLACK };
 
 unsigned char next_step = 0;
 
+bit enabled = 0;
+
+void release() {
+    HBRIDGE_12_E = 0;
+    HBRIDGE_34_E = 0;
+}
+
+void enable() {
+    HBRIDGE_12_E = 1;
+    HBRIDGE_34_E = 1;
+}
+
 unsigned char next(unsigned char previous) {
     if(previous >= 4) {
         previous = previous - 4;
@@ -49,6 +55,7 @@ unsigned char next(unsigned char previous) {
 }
 
 void forward() {
+    if(!enabled) enable();
     bitset(LATA, forward_steps[forward_step]);
     bitset(LATA, forward_steps[next(forward_step + 1)]);
     bitclr(LATA, forward_steps[next(forward_step + 2)]);
@@ -58,6 +65,7 @@ void forward() {
 }
 
 void backward() {
+    if(!enabled) enable();
     bitset(LATA, reverse_steps[reverse_step]);
     bitset(LATA, reverse_steps[next(reverse_step + 1)]);
     bitclr(LATA, reverse_steps[next(reverse_step + 2)]);
@@ -65,3 +73,4 @@ void backward() {
     reverse_step = next(reverse_step + 1);
     __delay_ms(DELAY);
 }
+
