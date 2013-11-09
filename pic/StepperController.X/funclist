@@ -1,10 +1,11 @@
-_init: CODE, 2540 0 22
-_init_motor: CODE, 2562 0 14
-_main: CODE, 2398 0 142
-_forward: CODE, 2310 0 60
-_delay_10ms: CODE, 2438 0 30
+_init: CODE, 2714 0 22
+_init_motor: CODE, 2670 0 22
+_main: CODE, 2550 0 164
+_forward: CODE, 2386 0 134
+_delay_10ms: CODE, 2590 0 30
+_next: CODE, 2736 0 18
 _isr: CODE, 8 0 2214
-_delay_s: CODE, 2518 0 22
-_init_i2c: CODE, 2468 0 26
-_backward: CODE, 2222 0 60
-Total: 2590
+_delay_s: CODE, 2692 0 22
+_init_i2c: CODE, 2620 0 26
+_backward: CODE, 2222 0 134
+Total: 2786
