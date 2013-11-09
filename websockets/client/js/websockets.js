@@ -6,11 +6,12 @@ function registerWebsockets(callback) {
       function (session) {
          sess = session;
          console.log("Connected to " + wsuri + "!");
+         $("#connected").text("Connected");
          callback();
       },
       function (code, reason) {
          sess = null;
-         alert(reason);
+         $("#connected").text("Disconnected");
       }
    );
 };
