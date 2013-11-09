@@ -1,7 +1,6 @@
 $(document).ready(function() {
     registerWebsockets(function() {
         registerForLcdEvents();
-        getCurrentLcdText();
         getCurrentBacklightState();
     });
     registerButtonListeners();
@@ -25,21 +24,12 @@ function registerButtonListeners() {
     }); 
 }
 
-function onLcdWriteEvent(topicUri, event) {
-    showCurrentLcdText(event);
-}
-
 function onLcdBacklightEvent(topicUri, event) {
     showCurrentBacklightState(event);
 }
 
 function registerForLcdEvents() {
-    sess.subscribe("/lcd#write", onLcdWriteEvent);
     sess.subscribe("/lcd#backlight", onLcdBacklightEvent);
-}
-
-function getCurrentLcdText() {
-    sess.call("/lcd#read").then(showCurrentLcdText, ab.log);
 }
 
 function getCurrentBacklightState() {
@@ -65,7 +55,6 @@ function showCurrentBacklightState(state) {
 }
 
 function writeBothRowsToLcd() {
-    //clearLcd();
     var rowOneValue = $("#textForLcdRowOne").val();
     setLcdRow(0);
     writeToLcd(rowOneValue);
