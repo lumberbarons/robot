@@ -32,14 +32,18 @@ void init_serial() {
     OpenUSART(UART1Config, baud);
 }
 
+void flash_led() {
+    TRISB4 = 0;
+    LATB4 = 1;
+    delay_10ms(10);
+    LATB4 = 0;
+}
+
 void init() {
     init_i2c();
     init_motor();
 
-    TRISB4 = 0;
-    LATB4 = 1;
-    delay_s(1);
-    LATB4 = 0;
+    flash_led();
 }
 
 #define MSTR_WRITE_ADD  0b00001001 // Master Write, Last Byte was Address
@@ -103,7 +107,7 @@ unsigned char command;
 
 #define COMMAND_STEP_FWD    0x00
 #define COMMAND_STEP_BWD    0x01
-#define COMMAND_RELEASE     0x02
+#define COMMAND_DISABLE     0x02
 
 void main() {
     init();
@@ -118,8 +122,9 @@ void main() {
                 case COMMAND_STEP_BWD:
                     backward();
                     break;
-                case COMMAND_RELEASE:
-                    release();
+                case COMMAND_DISABLE:
+                    flash_led();
+                    disable();
                     break;
             }
             ready = 0;

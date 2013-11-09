@@ -16,11 +16,12 @@
 #define bitclr(var, bitno) (((var) &= ~(1UL << (bitno)))
 
 void init_motor() {
-    TRISA = 0x00;
+    TRISA = 0;
 
-    release();
-
-    TRISC = 0x00;
+    disable();
+    
+    TRISC1 = 0;
+    TRISC2 = 0;
 
     MOTOR_1 = 1;
     MOTOR_2 = 1;
@@ -31,27 +32,38 @@ const unsigned char forward_steps[4] = { BLACK, RED, GREEN, BLUE };
 unsigned char reverse_step = 0;
 const unsigned char reverse_steps[4] = { BLUE, GREEN, RED, BLACK };
 
-#define DELAY   5
+#define DELAY   1
 
 unsigned char next_step = 0;
 
 bit enabled = 0;
 
-void release() {
+void clear() {
+    bitclr(LATA, BLACK);
+    bitclr(LATA, GREEN);
+    bitclr(LATA, RED);
+    bitclr(LATA, BLUE);
+}
+
+void disable() {
+    clear();
     HBRIDGE_12_E = 0;
     HBRIDGE_34_E = 0;
+    enabled = 0;
 }
 
 void enable() {
+    clear();
     HBRIDGE_12_E = 1;
     HBRIDGE_34_E = 1;
+    enabled = 1;
 }
 
-unsigned char next(unsigned char previous) {
-    if(previous >= 4) {
-        previous = previous - 4;
+unsigned char next(unsigned char step) {
+    if(step >= 4) {
+        step = step - 4;
     }
-    return previous;
+    return step;
 }
 
 void forward() {
@@ -73,4 +85,3 @@ void backward() {
     reverse_step = next(reverse_step + 1);
     __delay_ms(DELAY);
 }
-

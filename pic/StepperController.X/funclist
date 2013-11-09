@@ -1,17 +1,18 @@
 _reverse_steps: SMALLCONST, 2052 0 4
-_init: CODE, 2974 0 28
-_init_motor: CODE, 3052 0 18
-_main: CODE, 2830 0 60
+_init: CODE, 3072 0 14
+_disable: CODE, 3086 0 14
+_init_motor: CODE, 3024 0 18
+_main: CODE, 2830 0 64
 _forward: CODE, 2590 0 240
 _address: SMALLCONST, 2056 0 1
-_enable: CODE, 3086 0 6
-__initialization: CODE, 2890 0 32
-_delay_10ms: CODE, 3002 0 26
-_release: CODE, 3092 0 6
+_flash_led: CODE, 3004 0 20
+_enable: CODE, 3058 0 14
+__initialization: CODE, 2894 0 32
+_delay_10ms: CODE, 2978 0 26
 _forward_steps: SMALLCONST, 2048 0 4
-_next: CODE, 3070 0 16
+_next: CODE, 3042 0 16
 _isr: CODE, 8 0 2342
-_delay_s: CODE, 3028 0 24
-_init_i2c: CODE, 2932 0 42
+_clear: CODE, 3100 0 10
+_init_i2c: CODE, 2936 0 42
 _backward: CODE, 2350 0 240
-Total: 3089
+Total: 3101
