@@ -1,17 +1,20 @@
+import pykka
 import smbus
 import time
 
-class LcdWriter:
+class LcdWriter(pykka.ThreadingActor):
 
     bus = smbus.SMBus(1)
     addr = 0x21
 
+    lcdBacklightState = False
+
     def write(self, text):
         length = len(text)
         for x in range(0, length):
-            self.single(text[x])
+            self._single(text[x])
 
-    def single(self, char):
+    def _single(self, char):
         self.bus.write_byte_data(self.addr, 0x00, ord(char))
 
     def row(self, row):

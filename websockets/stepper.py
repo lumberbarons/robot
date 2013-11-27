@@ -1,11 +1,11 @@
+import pykka
 import smbus
 import time
 
-class StepperWriter:
+class StepperWriter(pykka.ThreadingActor):
 
     addr = 0x20
     bus = smbus.SMBus(1)
-    
     rotation = 200
 
     def forward(self):

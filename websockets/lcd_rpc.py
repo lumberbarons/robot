@@ -1,14 +1,14 @@
 from autobahn.wamp import exportRpc
-from lcd import LcdWriter
 
 class LcdRpc:
 
-    lcdWriter = LcdWriter()
-    lcdBacklightState = True
+    lcdBacklightState = False
     
-    def __init__(self, parent):
+    def __init__(self, parent, lcdWriter):
         self.parent = parent
-        
+        self.lcdWriter = lcdWriter
+        self.lcdWriter.backlightOff()
+      
     @exportRpc("write")
     def write(self, text):
         self.lcdWriter.write(text)
