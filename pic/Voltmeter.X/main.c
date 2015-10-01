@@ -1,11 +1,11 @@
-#include <xc.h>
-#include <plib/usart.h>
+#include <htc.h>
 
 #include "config.h"
+#include "serial.h"
 #include "delay.h"
-#include "motor.h"
+#include "voltmeter.h"
 
-const unsigned char address = 0x21;
+const unsigned char address = 0x22;
 
 void init_i2c() {
     TRISB0 = 1;
@@ -21,17 +21,6 @@ void init_i2c() {
     GIE = 1;
 }
 
-unsigned char UART1Config = 0;
-unsigned char baud = 312; // 9600 Baud at 48MHz
-
-void init_serial() {
-    TRISCbits.RC6 = 0;
-    TRISCbits.RC7 = 1;
-
-    UART1Config = USART_TX_INT_OFF & USART_TX_INT_OFF & USART_ASYNCH_MODE & USART_EIGHT_BIT & USART_BRGH_HIGH;
-    OpenUSART(UART1Config, baud);
-}
-
 void flash_led() {
     TRISB4 = 0;
     LATB4 = 1;
@@ -40,8 +29,9 @@ void flash_led() {
 }
 
 void init() {
+    init_serial(9600);
     init_i2c();
-    init_motor();
+    init_voltmeter();
 
     flash_led();
 }
@@ -53,13 +43,24 @@ void init() {
 
 volatile unsigned char sspstat;
 
+#define I2C_TX_BUFF_SIZE 8
 #define I2C_RX_BUFF_SIZE 3
 
 volatile unsigned char i2c_rx_buff[I2C_RX_BUFF_SIZE] = {0x00, 0x00, 0x00};
 volatile unsigned char i2c_rx_index;
 
+volatile unsigned char i2c_tx_buff[I2C_TX_BUFF_SIZE] = {0xFE, 0xFE, 0xFE, 0xFE, 0xFE, 0xFE, 0xFE, 0xFE};
+volatile unsigned char i2c_tx_index = 0;
+
 volatile bit start = 0;
 volatile bit ready = 0;
+
+unsigned char get() {
+    if(i2c_tx_index >= sizeof (i2c_tx_buff)) {
+        return 0xFF;
+    }
+    return i2c_tx_buff[i2c_tx_index];
+}
 
 void interrupt isr() {
     if (SSPIF && SSPIE) {
@@ -78,50 +79,51 @@ void interrupt isr() {
             }
         } else if (sspstat == MSTR_READ_ADD) {
             SSPBUF;
-            SSPBUF = 0;
+            SSPBUF = get();
             CKP = 1;
+            i2c_tx_index++;
         } else if (sspstat == MSTR_READ_DATA && !CKP) {
-            SSPBUF = 0;
+            SSPBUF = get();
             CKP = 1;
+            i2c_tx_index++;
         } else {
             CKP = 1;
-            if (i2c_rx_index > 0) {
-                i2c_rx_index = 0;
+            if(i2c_rx_index == 2) {
+                // it's a command so go go go
                 ready = 1;
+            } else {
+                // set the index for a get
+                i2c_tx_index = i2c_rx_buff[0];
             }
         }
     }
 }
 
-unsigned char command = 0xff;
-
-#define COMMAND_STEP_FWD    0x00
-#define COMMAND_STEP_BWD    0x01
-#define COMMAND_DISABLE     0x02
+unsigned int voltage;
+unsigned char channel;
 
 void main() {
     init();
 
     while (1) {
         if (ready) {
-            command = i2c_rx_buff[0];
+            voltage = read_voltage(0);
+            i2c_tx_buff[0] = (voltage >> 8) & 0xFF;
+            i2c_tx_buff[1] = voltage & 0xFF;
+
+            voltage = read_voltage(1);
+            i2c_tx_buff[2] = (voltage >> 8) & 0xFF;
+            i2c_tx_buff[3] = voltage & 0xFF;
+
+            voltage = read_voltage(2);
+            i2c_tx_buff[4] = (voltage >> 8) & 0xFF;
+            i2c_tx_buff[5] = voltage & 0xFF;
+
+            voltage = read_voltage(3);
+            i2c_tx_buff[6] = (voltage >> 8) & 0xFF;
+            i2c_tx_buff[7] = voltage & 0xFF;
+
             ready = 0;
         }
-
-        switch(command) {
-            case COMMAND_STEP_FWD:
-                forward();
-                break;
-            case COMMAND_STEP_BWD:
-                backward();
-                break;
-            case COMMAND_DISABLE:
-                disable();
-                flash_led();
-                command = 0xff;
-                break;
-        }
-
-        delay_10ms(2);
     }
 }

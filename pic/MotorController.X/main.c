@@ -28,10 +28,19 @@ void init_i2c() {
     GIE = 1;
 }
 
+void flash_led() {
+    TRISB4 = 0;
+    LATB4 = 1;
+    delay_10ms(10);
+    LATB4 = 0;
+}
+
 void init() {
     //init_serial(9600);
     init_i2c();
     init_motor();
+
+    flash_led();
 }
 
 #define MSTR_WRITE_ADD  0b00001001 // Master Write, Last Byte was Address
