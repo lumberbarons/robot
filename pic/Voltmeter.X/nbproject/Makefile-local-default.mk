@@ -14,24 +14,23 @@
 # You can invoke make with the values of the macros:
 # $ makeMP_CC="/opt/microchip/mplabc30/v3.30c/bin/pic30-gcc" ...  
 #
-SHELL=cmd.exe
-PATH_TO_IDE_BIN=C:/Program Files/Microchip/MPLABX/mplab_ide/mplab_ide/modules/../../bin/
+PATH_TO_IDE_BIN=/Applications/microchip/mplabx/v5.10/mplab_platform/platform/../mplab_ide/modules/../../bin/
 # Adding MPLAB X bin directory to path.
-PATH:=C:/Program Files/Microchip/MPLABX/mplab_ide/mplab_ide/modules/../../bin/:$(PATH)
+PATH:=/Applications/microchip/mplabx/v5.10/mplab_platform/platform/../mplab_ide/modules/../../bin/:$(PATH)
 # Path to java used to run MPLAB X when this makefile was created
-MP_JAVA_PATH="C:\Program Files\Microchip\MPLABX\sys\java\jre1.6.0_32-windows\java-windows/bin/"
+MP_JAVA_PATH="/Applications/microchip/mplabx/v5.10/sys/java/jre1.8.0_181.jre/Contents/Home/bin/"
 OS_CURRENT="$(shell uname -s)"
-MP_CC="C:\Program Files\HI-TECH Software\PICC-18\9.80\bin\picc18.exe"
+MP_CC="/Applications/microchip/xc8/v1.35/bin/xc8"
 # MP_CPPC is not defined
 # MP_BC is not defined
-MP_AS="C:\Program Files\HI-TECH Software\PICC-18\9.80\bin\picc18.exe"
-MP_LD="C:\Program Files\HI-TECH Software\PICC-18\9.80\bin\picc18.exe"
-MP_AR="C:\Program Files\HI-TECH Software\PICC-18\9.80\bin\picc18.exe"
-DEP_GEN=${MP_JAVA_PATH}java -jar "C:/Program Files/Microchip/MPLABX/mplab_ide/mplab_ide/modules/../../bin/extractobjectdependencies.jar" 
-MP_CC_DIR="C:\Program Files\HI-TECH Software\PICC-18\9.80\bin"
+MP_AS="/Applications/microchip/xc8/v1.35/bin/xc8"
+MP_LD="/Applications/microchip/xc8/v1.35/bin/xc8"
+MP_AR="/Applications/microchip/xc8/v1.35/bin/xc8"
+DEP_GEN=${MP_JAVA_PATH}java -jar "/Applications/microchip/mplabx/v5.10/mplab_platform/platform/../mplab_ide/modules/../../bin/extractobjectdependencies.jar"
+MP_CC_DIR="/Applications/microchip/xc8/v1.35/bin"
 # MP_CPPC_DIR is not defined
 # MP_BC_DIR is not defined
-MP_AS_DIR="C:\Program Files\HI-TECH Software\PICC-18\9.80\bin"
-MP_LD_DIR="C:\Program Files\HI-TECH Software\PICC-18\9.80\bin"
-MP_AR_DIR="C:\Program Files\HI-TECH Software\PICC-18\9.80\bin"
+MP_AS_DIR="/Applications/microchip/xc8/v1.35/bin"
+MP_LD_DIR="/Applications/microchip/xc8/v1.35/bin"
+MP_AR_DIR="/Applications/microchip/xc8/v1.35/bin"
 # MP_BC_DIR is not defined

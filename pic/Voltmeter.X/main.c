@@ -1,24 +1,30 @@
 #include <htc.h>
 
 #include "config.h"
-#include "serial.h"
 #include "delay.h"
 #include "voltmeter.h"
 
-const unsigned char address = 0x22;
+const unsigned char address = 0x10;
 
 void init_i2c() {
     TRISB0 = 1;
     TRISB1 = 1;
 
-    SMP = 0;
+    SSPSTATbits.SMP = 0;
     SSPCON1 = 0b00101110; // I2C Enabled, I2C Slave 7-bit Address
     SSPCON2 = 0b00000001; // Clock Stretching Enabled
     SSPADD = address << 1;
 
-    SSPIE = 1;
-    PEIE = 1;
-    GIE = 1;
+    PIE1bits.SSPIE = 1;
+}
+
+void init_timer() {
+    T0CON = 0X00;
+    INTCONbits.T0IE = 1;
+    INTCON2bits.TMR0IP = 0x00; // low priority      
+    T0CONbits.TMR0ON = 1;
+    T0CONbits.T0PS = 0b111;
+    TMR0 = 0xFF;
 }
 
 void flash_led() {
@@ -29,17 +35,22 @@ void flash_led() {
 }
 
 void init() {
-    init_serial(9600);
     init_i2c();
+    init_timer();
+    
+    // enable interrupts
+    RCONbits.IPEN = 1;
+    INTCONbits.PEIE = 1;
+    INTCONbits.GIE = 1;
+    
     init_voltmeter();
-
     flash_led();
 }
 
-#define MSTR_WRITE_ADD  0b00001001 // Master Write, Last Byte was Address
-#define MSTR_WRITE_DATA 0b00101001 // Master Write, Last Byte was Data
-#define MSTR_READ_ADD   0b00001101 // Master Read, Last Byte as Address
-#define MSTR_READ_DATA  0b00101100 // Master Read, Last Byte was Data
+#define MSTR_WRITE_ADDR  0b00001001 // Master Write, Last Byte was Address
+#define MSTR_WRITE_DATA  0b00101001 // Master Write, Last Byte was Data
+#define MSTR_READ_ADDR   0b00001101 // Master Read, Last Byte as Address
+#define MSTR_READ_DATA   0b00101100 // Master Read, Last Byte was Data
 
 volatile unsigned char sspstat;
 
@@ -52,8 +63,7 @@ volatile unsigned char i2c_rx_index;
 volatile unsigned char i2c_tx_buff[I2C_TX_BUFF_SIZE] = {0xFE, 0xFE, 0xFE, 0xFE, 0xFE, 0xFE, 0xFE, 0xFE};
 volatile unsigned char i2c_tx_index = 0;
 
-volatile bit start = 0;
-volatile bit ready = 0;
+volatile bit command_ready = 0;
 
 unsigned char get() {
     if(i2c_tx_index >= sizeof (i2c_tx_buff)) {
@@ -62,12 +72,12 @@ unsigned char get() {
     return i2c_tx_buff[i2c_tx_index];
 }
 
-void interrupt isr() {
-    if (SSPIF && SSPIE) {
+void interrupt high_isr() {
+    if (SSPIF && SSPIE) {            
         SSPIF = 0;
         sspstat = SSPSTAT & 0b00101101; // D/A, S, R/W, BF
-
-        if (sspstat == MSTR_WRITE_ADD) {
+        
+        if (sspstat == MSTR_WRITE_ADDR) {
             i2c_rx_index = 0;
             SSPBUF;
             CKP = 1;
@@ -77,7 +87,7 @@ void interrupt isr() {
             if (++i2c_rx_index == sizeof (i2c_rx_buff)) {
                 i2c_rx_index = 0;
             }
-        } else if (sspstat == MSTR_READ_ADD) {
+        } else if (sspstat == MSTR_READ_ADDR) {
             SSPBUF;
             SSPBUF = get();
             CKP = 1;
@@ -88,9 +98,9 @@ void interrupt isr() {
             i2c_tx_index++;
         } else {
             CKP = 1;
-            if(i2c_rx_index == 2) {
-                // it's a command so go go go
-                ready = 1;
+            if(i2c_rx_index == 2) {             
+                // it's a command
+                command_ready = 1; 
             } else {
                 // set the index for a get
                 i2c_tx_index = i2c_rx_buff[0];
@@ -99,31 +109,23 @@ void interrupt isr() {
     }
 }
 
-unsigned int voltage;
-unsigned char channel;
+void read_voltages() {
+    unsigned char channelByte = 0;
+    for(unsigned char channel = 0; channel < 4; channel++) {
+        unsigned int voltage = read_voltage(channel);
+        i2c_tx_buff[channelByte++] = (voltage >> 8) & 0xFF;
+        i2c_tx_buff[channelByte++] = voltage & 0xFF;
+    }
+}
+
+void interrupt low_priority low_isr() {
+    if(INTCONbits.T0IF && INTCONbits.T0IE) {                               
+        INTCONbits.T0IF = 0;
+        read_voltages();
+    }
+}
 
 void main() {
     init();
-
-    while (1) {
-        if (ready) {
-            voltage = read_voltage(0);
-            i2c_tx_buff[0] = (voltage >> 8) & 0xFF;
-            i2c_tx_buff[1] = voltage & 0xFF;
-
-            voltage = read_voltage(1);
-            i2c_tx_buff[2] = (voltage >> 8) & 0xFF;
-            i2c_tx_buff[3] = voltage & 0xFF;
-
-            voltage = read_voltage(2);
-            i2c_tx_buff[4] = (voltage >> 8) & 0xFF;
-            i2c_tx_buff[5] = voltage & 0xFF;
-
-            voltage = read_voltage(3);
-            i2c_tx_buff[6] = (voltage >> 8) & 0xFF;
-            i2c_tx_buff[7] = voltage & 0xFF;
-
-            ready = 0;
-        }
-    }
+    while (1);
 }
